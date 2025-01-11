@@ -1,3 +1,24 @@
+#-------------------------------------------------------------
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#-------------------------------------------------------------
+
 matrixSqrt = function(
     Matrix[Double] X,
     boolean iterMethod
@@ -7,36 +28,33 @@ matrixSqrt = function(
     N = nrow(X);
     D = ncol(X);
 
-    if( D == N ){
-        # Any non singualar square matrix has a square root
-        isDiag = isDiagonal(X)
-        if(isDiag) {
-            print("diag solution")
-            sqrt_x = sqrtDiagMatrix(X);
-        } else {
-            if(!iterMethod) {
-                #todo: check if all EigVal positive than possible
-                sqrt_x = sqrtEigInv(X);
-                print("eig inv solution")
-            } else {
-                # todo: iterative solution
-                #formular: (Denman–Beavers iteration)
-                print("iterative solution")
-                Y = X
-                #identity matrix
-                Z = diag(matrix(1.0, rows=N, cols=1))
+    #check that matrix is square
+    if (D != N){
+        stop("matrixSqrt Input Error: matrix not square!")
+    }
 
-                for (x in 1:10) {
-                    Y_new = (1 / 2) * (Y + inv(Z))
-                    Z_new = (1 / 2) * (Z + inv(Y))
-                    Y = Y_new
-                    Z = Z_new
-                }
-                sqrt_x = Y
-            }
-        }
+    # Any non singualar square matrix has a square root
+    isDiag = isDiagonal(X)
+    if(isDiag) {
+        sqrt_x = sqrtDiagMatrix(X);
     } else {
-        sqrt_x = matrix (0, rows=N, cols=D);
+        if(!iterMethod) {
+            #todo: check if all EigVal positive than possible
+            sqrt_x = sqrtEigInv(X);
+        } else {
+            #formular: (Denman–Beavers iteration)
+            Y = X
+            #identity matrix
+            Z = diag(matrix(1.0, rows=N, cols=1))
+
+            for (x in 1:10) {
+                Y_new = (1 / 2) * (Y + inv(Z))
+                Z_new = (1 / 2) * (Z + inv(Y))
+                Y = Y_new
+                Z = Z_new
+            }
+            sqrt_x = Y
+        }
     }
 }
 
@@ -48,10 +66,21 @@ sqrtDiagMatrix = function(
 ){
     N = nrow(X);
 
-    sqrt_x = matrix (0, rows=N, cols=N);
+    #check if identity matrix
+    is_identity = TRUE;
     for (i in 1:N) {
-        value = X[i, i];
-        sqrt_x[i, i] = sqrt(value);
+        is_idElement = as.scalar(X[i, i]) == 1.0;
+        is_identity = is_identity & is_idElement;
+    }
+
+    if(is_identity) {
+        sqrt_x = X;
+    } else {
+        sqrt_x = matrix (0, rows=N, cols=N);
+        for (i in 1:N) {
+            value = X[i, i];
+            sqrt_x[i, i] = sqrt(value);
+        }
     }
 }
 
