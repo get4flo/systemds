@@ -160,7 +160,7 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 			// find path to associated dml script and define parameters
 			String HOME = SCRIPT_DIR + TEST_DIR;
 			fullDMLScriptName = HOME + TEST_NAME + ".dml";
-			programArgs = new String[] {"-args", input("X"), input("S"), output("Y")};
+			programArgs = new String[] {"-args", input("X"), strategy, output("Y")};
 
 			// define input matrix for the matrix sqrt function according to test case
 			double[][] X = null;
@@ -264,7 +264,6 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 
 			// write the input matrix and strategy for matrix sqrt function to dml script
             writeInputMatrixWithMTD("X", X, true);
-			writeInputMatrixWithMTD("S", strategy, true); // TODO: find how to write a string to dml
 
 			// run the test dml script
 			runTest(true, false, null, -1);
