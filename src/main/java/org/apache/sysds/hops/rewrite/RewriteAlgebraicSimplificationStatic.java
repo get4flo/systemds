@@ -153,8 +153,9 @@ public class RewriteAlgebraicSimplificationStatic extends HopRewriteRule
 			hi = canonicalizeMatrixMultScalarAdd(hi);            //e.g., eps+U%*%t(V) -> U%*%t(V)+eps, U%*%t(V)-eps -> U%*%t(V)+(-eps) 
 			hi = simplifyCTableWithConstMatrixInputs(hi);        //e.g., table(X, matrix(1,...)) -> table(X, 1)
 			hi = removeUnnecessaryCTable(hop, hi, i);            //e.g., sum(table(X, 1)) -> nrow(X) and sum(table(1, Y)) -> nrow(Y) and sum(table(X, Y)) -> nrow(X)
-			hi = simplifyConstantConjunction(hop, hi, i);       //e.g., a & !a -> FALSE 
+			hi = simplifyConstantConjunction(hop, hi, i);        //e.g., a & !a -> FALSE 
 			hi = simplifyReverseOperation(hop, hi, i);           //e.g., table(seq(1,nrow(X),1),seq(nrow(X),1,-1)) %*% X -> rev(X)
+			hi = simplifyReverseSequence(hop, hi, i);            //e.g., rev(seq(1,n)) -> seq(n,1)
 			if(OptimizerUtils.ALLOW_OPERATOR_FUSION)
 				hi = simplifyMultiBinaryToBinaryOperation(hi);       //e.g., 1-X*Y -> X 1-* Y
 			hi = simplifyDistributiveBinaryOperation(hop, hi, i);//e.g., (X-Y*X) -> (1-Y)*X
@@ -173,6 +174,7 @@ public class RewriteAlgebraicSimplificationStatic extends HopRewriteRule
 			hi = simplifyTraceMatrixMult(hop, hi, i);            //e.g., trace(X%*%Y)->sum(X*t(Y));
 			hi = simplifySlicedMatrixMult(hop, hi, i);           //e.g., (X%*%Y)[1,1] -> X[1,] %*% Y[,1];
 			hi = simplifyListIndexing(hi);                       //e.g., L[i:i, 1:ncol(L)] -> L[i:i, 1:1]
+			hi = simplifyScalarIndexing(hop, hi, i);             //e.g., as.scalar(X[i,1])->X[i,1] w/ scalar output
 			hi = simplifyConstantSort(hop, hi, i);               //e.g., order(matrix())->matrix/seq;
 			hi = simplifyOrderedSort(hop, hi, i);                //e.g., order(matrix())->seq;
 			hi = fuseOrderOperationChain(hi);                    //e.g., order(order(X,2),1) -> order(X,(12))
@@ -794,6 +796,28 @@ public class RewriteAlgebraicSimplificationStatic extends HopRewriteRule
 
 				LOG.debug("Applied simplifyReverseOperation.");
 			}
+		}
+
+		return hi;
+	}
+	
+	private static Hop simplifyReverseSequence( Hop parent, Hop hi, int pos )
+	{
+		if( HopRewriteUtils.isReorg(hi, ReOrgOp.REV) 
+			&& HopRewriteUtils.isBasic1NSequence(hi.getInput(0))
+			&& hi.getInput(0).getParent().size() == 1) //only consumer
+		{
+			DataGenOp seq = (DataGenOp) hi.getInput(0);
+			Hop from = seq.getInput().get(seq.getParamIndex(Statement.SEQ_FROM));
+			Hop to = seq.getInput().get(seq.getParamIndex(Statement.SEQ_TO));
+			seq.getInput().set(seq.getParamIndex(Statement.SEQ_FROM), to);
+			seq.getInput().set(seq.getParamIndex(Statement.SEQ_TO), from);
+			seq.getInput().set(seq.getParamIndex(Statement.SEQ_INCR), new LiteralOp(-1));
+			
+			HopRewriteUtils.replaceChildReference(parent, hi, seq, pos);
+			HopRewriteUtils.cleanupUnreferenced(hi, seq);
+			hi = seq;
+			LOG.debug("Applied simplifyReverseSequence (line "+hi.getBeginLine()+").");
 		}
 
 		return hi;
@@ -1485,6 +1509,27 @@ public class RewriteAlgebraicSimplificationStatic extends HopRewriteRule
 		return hi;
 	}
 
+	private static Hop simplifyScalarIndexing(Hop parent, Hop hi, int pos)
+	{
+		//as.scalar(X[i,1]) -> X[i,1] w/ scalar output
+		if( HopRewriteUtils.isUnary(hi, OpOp1.CAST_AS_SCALAR) 
+			&& hi.getInput(0).getParent().size() == 1 // only consumer
+			&& hi.getInput(0) instanceof IndexingOp 
+			&& ((IndexingOp)hi.getInput(0)).isScalarOutput() 
+			&& hi.getInput(0).isMatrix() //no frame support yet 
+			&& !HopRewriteUtils.isData(parent, OpOpData.TRANSIENTWRITE)) 
+		{
+			Hop hi2 = hi.getInput().get(0);
+			hi2.setDataType(DataType.SCALAR); 
+			hi2.setDim1(0); hi2.setDim2(0);
+			HopRewriteUtils.replaceChildReference(parent, hi, hi2, pos);
+			HopRewriteUtils.cleanupUnreferenced(hi);
+			hi = hi2;
+			LOG.debug("Applied simplifyScalarIndexing (line "+hi.getBeginLine()+").");
+		}
+		return hi;
+	}
+	
 	private static Hop simplifyConstantSort(Hop parent, Hop hi, int pos)
 	{
 		//order(matrix(7), indexreturn=FALSE) -> matrix(7)
