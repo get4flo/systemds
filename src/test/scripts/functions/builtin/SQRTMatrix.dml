@@ -20,12 +20,14 @@
 #-------------------------------------------------------------
 
 # DML script to test the Square Root Operator for matrices
-# Result should be correct, if the result * result == Output
+# Result should be correct, if the result * result == input
 
-B = read($1);
-A = sqrtMatrixJava(B)
-C = A %*% A
+X = read($1);
+S = read($2);
 
-R = sum(abs(C-B)<1e-8)
+A = sqrtMatrixJava(X = X, strategy = S)
+Y = A %*% A
+R = sum(abs(Y-X)<1e-8)
 
-write (R, $2);
+write (Y, $3);
+write (R, $4);
