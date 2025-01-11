@@ -25,9 +25,15 @@
 X = read($1);
 S = read($2);
 
-A = sqrtMatrixJava(X = X, strategy = S)
+if S == "COMMON" {
+    A = sqrtMatrixJava(X)
+}
+else if S == "DML" {
+    A = matrixSqrt(X)
+}
+else {
+    stop("Error: Unknown strategy for matrix square root.")
+}
 Y = A %*% A
-R = sum(abs(Y-X)<1e-8)
 
 write (Y, $3);
-write (R, $4);

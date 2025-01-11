@@ -43,11 +43,109 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 
 	// tests for strategy "COMMON"
 	@Test
-	public void testSQRTMatrix() {
+	public void testSQRTMatrixJavaSquareMatrixSize1x1() {
 		runSQRTMatrix(true, ExecType.CP, "COMMON", 1);
 	}
 
-	/* TODO: add more test cases for COMMON and then for other strategies
+	@Test
+	public void testSQRTMatrixJavaSquareMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 2);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaSquareMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 3);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaSquareMatrixSize8x8() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 4);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaDiagonalMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 5);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaDiagonalMatrixSize3x3() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 6);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaDiagonalMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 7);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaPSDMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 8);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaPSDMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 9);
+	}
+
+	@Test
+	public void testSQRTMatrixJavaPSDMatrixSize3x3() {
+		runSQRTMatrix(true, ExecType.CP, "COMMON", 10);
+	}
+
+
+	// tests for strategy "DML"
+
+	@Test
+	public void testSQRTMatrixDMLSquareMatrixSize1x1() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 1);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLSquareMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 2);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLSquareMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 3);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLSquareMatrixSize8x8() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 4);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLDiagonalMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 5);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLDiagonalMatrixSize3x3() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 6);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLDiagonalMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 7);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLPSDMatrixSize2x2() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 8);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLPSDMatrixSize4x4() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 9);
+	}
+
+	@Test
+	public void testSQRTMatrixDMLPSDMatrixSize3x3() {
+		runSQRTMatrix(true, ExecType.CP, "DML", 10);
+	}
+
+	/* TODO: add more test cases for other strategies
 	@Test
 	public void testSQRTMatrix() {
 
@@ -62,30 +160,104 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 			// find path to associated dml script and define parameters
 			String HOME = SCRIPT_DIR + TEST_DIR;
 			fullDMLScriptName = HOME + TEST_NAME + ".dml";
-			programArgs = new String[] {"-args", input("X"), input("S"), output("Y"), output("R")};
+			programArgs = new String[] {"-args", input("X"), input("S"), output("Y")};
 
 			// define input matrix for the matrix sqrt function according to test case
 			double[][] X = null;
 			switch(test_case) {
-				case 1:
+				case 1: // arbitrary square matrix of dimension 1x1
 					double[][] X1 = {
-							{3, 1, 2, 1, 5},
-							{2, 1, 2, 2, 4},
-							{1, 1, 1, 3, 3},
-							{4, 2, 1, 4, 2},
-							{2, 2, 1, 5, 1},};
+							{4}
+					};
 					X = X1;
 					break;
-				case 2:
-					double[][] X2 = { // TODO: change values
-							{3, 1, 2, 1, 5},
-							{2, 1, 2, 2, 4},
-							{1, 1, 1, 3, 3},
-							{4, 2, 1, 4, 2},
-							{2, 2, 1, 5, 1},};
+				case 2: // arbitrary square matrix of dimension 2x2
+					double[][] X2 = {
+							{1, 2},
+							{3, 4},
+					};
 					X = X2;
 					break;
-					// TODO: add more test cases
+				case 3: // arbitrary square matrix of dimension 4x4
+					double[][] X3 = {
+							{1, 2, 3, 4},
+							{5.2, 6, 7, 8},
+							{9, 10.5, 11, 12.3},
+							{13, 14, 15.8, 16}
+					};
+					X = X3;
+					break;
+				case 4: // arbitrary square matrix of dimension 8x8
+					double[][] X4 = {
+							{1, 2, 3, 4, 5, 6, 7, 8},
+							{9, 10, 11, 12, 13, 14, 15, 16},
+							{17, 18, 19, 20, 21, 22, 23, 24},
+							{25, 26, 27, 28, 29, 30, 31, 32},
+							{33, 34, 35, 36, 37, 38, 39, 40},
+							{41, 42, 43, 44, 45, 46, 47, 48},
+							{49, 50, 51, 52, 53, 54, 55, 56},
+							{57, 58, 59, 60, 61, 62, 63, 64}
+					};
+					X = X4;
+					break;
+				case 5: // arbitrary diagonal matrix of dimension 2x2
+					double[][] X5 = {
+							{1, 0},
+							{0, 1},
+					};
+					X = X5;
+					break;
+				case 6: // arbitrary diagonal matrix of dimension 3x3
+					double[][] X6 = {
+							{-1, 0, 0},
+							{0, 2, 0},
+							{0, 0, 3}
+					};
+					X = X6;
+					break;
+				case 7: // arbitrary diagonal matrix of dimension 4x4
+					double[][] X7 = {
+							{-4.5, 0, 0, 0},
+							{0, -2, 0, 0},
+							{0, 0, -3.2, 0},
+							{0, 0, 0, 6}
+					};
+					X = X7;
+					break;
+				case 8: // arbitrary PSD matrix of dimension 2x2
+					// PSD matrix generated by taking (A^T)A of matrix A = [[1, 0], [2, 3]]
+					double[][] X8 = {
+							{1, 2},
+							{2, 13}
+					};
+					X = X8;
+					break;
+				case 9: // arbitrary PSD matrix of dimension 4x4
+					// PSD matrix generated by taking (A^T)A of matrix A=
+					// [[1, 0, 5, 6],
+					//  [2, 3, 0, 2],
+					//  [5, 0, 1, 1],
+					//  [2, 3, 4, 8]]
+					double[][] X9 = {
+							{62, 14, 16, 70},
+							{14, 17, 12, 29},
+							{16, 12, 27, 22},
+							{70, 29, 22, 93}
+					};
+					X = X9;
+					break;
+				case 10: // arbitrary PSD matrix of dimension 3x3
+					// PSD matrix generated by taking (A^T)A of matrix A =
+					// [[1.5, 0, 1.2],
+					// [2.2, 3.8, 4.4],
+					// [4.2, 6.1, 0.2]]
+					double[][] X10 = {
+							{3.69, 8.58, 6.54},
+							{8.58, 38.64, 33.30},
+							{6.54, 33.3, 54.89}
+					};
+					X = X10;
+					break;
 			}
 
 			assert X != null;
@@ -110,10 +282,6 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 
 			// compare the expected matrix (the input matrix X) with the received output matrix Y, which should be the (SQRT_MATRIX(X))^2 = X again
 			TestUtils.compareMatrices(expected_Y, actual_Y, eps, "Expected-DML", "Actual-DML");
-
-			// read the result accuracy from the dml script output R
-			HashMap<MatrixValue.CellIndex, Double> accuracy = readDMLScalarFromOutputDir("R");
-			System.out.println(accuracy.toString());
 		}
 		finally {
 			resetExecMode(platformOld);
