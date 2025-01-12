@@ -1761,11 +1761,24 @@ public class BuiltinFunctionExpression extends DataIdentifier {
 			break;
 
 		case SQRT_MATRIX_JAVA:
-
 			checkNumParameters(1);
 			checkMatrixParam(getFirstExpr());
 			output.setDataType(DataType.MATRIX);
 			output.setValueType(ValueType.FP64);
+			Identifier sqrtJava = getFirstExpr().getOutput();
+			if(sqrtJava.dimsKnown() && sqrtJava.getDim1() != sqrtJava.getDim2())
+				raiseValidateError("Input to sqrtMatrix() must be square matrix -- given: a " + sqrtJava.getDim1() + "x" + sqrtJava.getDim2() + " matrix.", conditional);
+			output.setDimensions( sqrtJava.getDim1(),  sqrtJava.getDim2());
+			output.setBlocksize( sqrtJava.getBlocksize());
+			break;
+
+		case SQRT_MATRIX:
+			checkNumParameters(1);
+			checkMatrixParam(getFirstExpr());
+
+			output.setDataType(DataType.MATRIX);
+			output.setValueType(ValueType.FP64);
+
 			Identifier sqrt = getFirstExpr().getOutput();
 			if(sqrt.dimsKnown() && sqrt.getDim1() != sqrt.getDim2())
 				raiseValidateError("Input to sqrtMatrix() must be square matrix -- given: a " + sqrt.getDim1() + "x" + sqrt.getDim2() + " matrix.", conditional);

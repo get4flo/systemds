@@ -80,7 +80,7 @@ public class LibCommonsMath
 	}
 	
 	public static boolean isSupportedUnaryOperation( String opcode ) {
-		return ( opcode.equals("inverse") || opcode.equals("cholesky") || opcode.equals("sqrtMatrixJava") );
+		return ( opcode.equals("inverse") || opcode.equals("cholesky") || opcode.equals("sqrtMatrixJava") || opcode.equals("sqrtMatrix") );
 	}
 	
 	public static boolean isSupportedMultiReturnOperation( String opcode ) {
@@ -95,7 +95,8 @@ public class LibCommonsMath
 			case "qr":
 			case "rcm":
 			case "stft":
-			case "svd": return true;
+			case "svd":
+				return true;
 			default: return false;
 		}
 
@@ -112,6 +113,9 @@ public class LibCommonsMath
 		else if (opcode.equals("cholesky"))
 			return computeCholesky(matrixInput);
 		else if (opcode.equals("sqrtMatrixJava"))
+			return computeSqrt(inj);
+		// redundant?!
+		else if (opcode.equals("sqrtMatrix"))
 			return computeSqrt(inj);
 		return null;
 	}
@@ -526,6 +530,7 @@ public class LibCommonsMath
 		EigenDecomposition ed = new EigenDecomposition(matrixInput);
 		return DataConverter.convertToMatrixBlock(ed.getSquareRoot());
 	}
+
 
 	/**
 	 * Function to compute matrix inverse via matrix decomposition.

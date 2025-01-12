@@ -41,6 +41,7 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 		addTestConfiguration(TEST_NAME, new TestConfiguration(TEST_CLASS_DIR, TEST_NAME, new String[] {"C"}));
 	}
 
+
 	// tests for strategy "COMMON"
 	@Test
 	public void testSQRTMatrixJavaSquareMatrixSize1x1() {
@@ -151,6 +152,7 @@ public class BuiltinSQRTMatrixTest extends AutomatedTestBase {
 
 	}
 	 */
+
 
 	private void runSQRTMatrix(boolean defaultProb, ExecType instType, String strategy, int test_case) {
 		Types.ExecMode platformOld = setExecMode(instType);
