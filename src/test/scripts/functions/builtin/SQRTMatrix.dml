@@ -23,7 +23,19 @@
 # Result should be correct, if the result * result == input
 
 X = read($1);
-S = read($2);
+print(as.scalar(X[1,1]))
+
+if (X == NaN) {
+    stop("Error: Input matrix X is NaN.");
+}
+
+S = $2;
+
+print("Value of S: ", S);
+
+if (S == "") {
+    stop("Error: Strategy String S is empty.");
+}
 
 if (S == "COMMON") {
     A = sqrtMatrixJava(X)
