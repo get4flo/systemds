@@ -1,0 +1,51 @@
+A = matrix(1, rows=2,cols=2)
+B = matrix(4, rows=2,cols=2)
+
+# easy test
+B[1,1] = 4.0
+B[1,2] = 0.0
+B[2,1] = 0.0
+B[2,2] = 4.0
+
+res = matrixSqrt(B)
+print(as.scalar(res[1,1]))
+print(as.scalar(res[1,2]))
+print(as.scalar(res[2,1]))
+print(as.scalar(res[2,2]))
+
+# with this test for diag sqrt
+B[1,1] = 1.0
+B[1,2] = 1.0
+B[2,1] = 0.0
+B[2,2] = 1.0
+
+#matrixSqrt(A)
+#res = isDiagonal(A)
+#print(isDiagonal(A))
+res = matrixSqrt(B)
+print(as.scalar(res[1,1]))
+print(as.scalar(res[1,2]))
+print(as.scalar(res[2,1]))
+print(as.scalar(res[2,2]))
+
+# iter test
+B[1,1] = 16.0
+B[1,2] = 21.0
+B[2,1] = 28.0
+B[2,2] = 37.0
+
+res = matrixSqrt(B)
+print(as.scalar(res[1,1]))
+print(as.scalar(res[1,2]))
+print(as.scalar(res[2,1]))
+print(as.scalar(res[2,2]))
+
+#d = matrix("1.0 0.0
+#            0.0 1.0", 2, 2);
+#n = 3
+#I = diag(matrix(1.0, rows=n, cols=1))
+#print(toString(I, decimal=1))
+
+#test sqrt
+#C = sqrt(2)
+#print(C)
