@@ -25,10 +25,10 @@
 X = read($1);
 S = read($2);
 
-if S == "COMMON" {
+if (S == "COMMON") {
     A = sqrtMatrixJava(X)
 }
-else if S == "DML" {
+else if (S == "DML") {
     A = matrixSqrt(X)
 }
 else {
